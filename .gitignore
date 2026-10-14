@@ -5,3 +5,8 @@ _ungvien
 *.mp3
 *.wav
 !nhacnen.mp3
+
+# bí mật deploy, không đẩy lên GitHub
+.deploy.env
+.vercel_token
+.vercel

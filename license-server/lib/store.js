@@ -1,9 +1,16 @@
 import { Redis } from "@upstash/redis";
 
-// Upstash Redis. Khi gắn integration Upstash trên Vercel, các biến môi trường
-// KV_REST_API_URL / KV_REST_API_TOKEN (hoặc UPSTASH_REDIS_REST_URL / _TOKEN)
-// sẽ tự có. Redis.fromEnv() tự đọc.
-export const redis = Redis.fromEnv();
+// Upstash Redis. Tùy cách gắn trên Vercel, biến môi trường có thể là
+// KV_REST_API_URL/KV_REST_API_TOKEN hoặc UPSTASH_REDIS_REST_URL/..._TOKEN.
+// Nhận cả hai để tránh lỗi tên biến.
+const url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
+const token = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
+if (!url || !token) {
+  throw new Error(
+    "Chưa cấu hình Upstash Redis (thiếu KV_REST_API_URL/TOKEN). Gắn Upstash cho project trên Vercel."
+  );
+}
+export const redis = new Redis({ url, token });
 
 const KEY_PREFIX = "lic:";
 const INDEX = "lics";
