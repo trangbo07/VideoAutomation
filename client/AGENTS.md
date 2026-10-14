@@ -58,8 +58,10 @@ Mỗi phần tử `canh.ds[]` có `loai` và `batDau` (giây), cộng các trư�
 
 Xem `du_an_mau/tap01/tap.json` làm mẫu đầy đủ.
 
-## Render
+## Xem trước & Render
 
 ```
-stls render du_an/<ten_tap>/tap.json out/<ten_tap>.mp4
+stls xem   du_an/<ten_tap>/tap.json                     # bản nháp nhanh, nét thấp để xem thử
+stls render du_an/<ten_tap>/tap.json out/<ten_tap>.mp4  # bản chính, nét đầy đủ
 ```
+Nên `stls xem` để kiểm tra bố cục/căn thời gian trước, ưng rồi mới `stls render`.

@@ -22,9 +22,10 @@ function help() {
 
   stls activate <KEY>          Kích hoạt key trên máy này (một lần)
   stls status                  Xem tình trạng key
+  stls xem <tap.json>          Dựng bản XEM TRƯỚC nhanh (nét thấp) rồi tự mở để xem
   stls render <tap.json> [ra.mp4]
-                               Render một tập. Ảnh/âm thanh lấy từ thư mục public/
-                               cạnh file tap.json (hoặc ./public).
+                               Render bản chính (nét đầy đủ). Ảnh/âm thanh lấy từ
+                               thư mục public/ cạnh file tap.json (hoặc ./public).
 
 Biến môi trường:
   STLS_KEY       key (thay cho 'stls activate')
@@ -43,7 +44,8 @@ function copyDir(src, dst) {
   }
 }
 
-async function cmdRender(args) {
+async function cmdRender(args, opts = {}) {
+  const draft = !!opts.draft;
   const input = args[0];
   if (!input) die("Thiếu đường dẫn tap.json. Ví dụ: stls render du_an/tap01/tap.json");
   const tapPath = path.resolve(input);
@@ -101,7 +103,7 @@ async function cmdRender(args) {
   copyDir(BUNDLE, serveDir);
   copyDir(publicDir, serveDir);
 
-  const out = path.resolve(args[1] || "out.mp4");
+  const out = path.resolve(args[1] || (draft ? "out/xem-truoc.mp4" : "out.mp4"));
   fs.mkdirSync(path.dirname(out), { recursive: true });
 
   // Nạp @remotion/renderer (chỉ khi cần, báo lỗi rõ nếu chưa cài).
@@ -112,7 +114,7 @@ async function cmdRender(args) {
     die("Chưa cài đặt đầy đủ. Chạy: npm install  (trong thư mục stls).");
   }
 
-  log("• Đang dựng video (có thể mất vài phút)…");
+  log(draft ? "• Đang dựng bản XEM TRƯỚC (nhanh, nét thấp)…" : "• Đang dựng video (có thể mất vài phút)…");
   try {
     const composition = await selectComposition({
       serveUrl: serveDir,
@@ -123,7 +125,10 @@ async function cmdRender(args) {
       serveUrl: serveDir,
       composition,
       codec: "h264",
-      crf: 20,
+      // Bản xem trước: thu nhỏ 1/2, dựng cực nhanh, nén mạnh cho nhẹ.
+      crf: draft ? 30 : 20,
+      scale: draft ? 0.5 : 1,
+      x264Preset: draft ? "ultrafast" : "medium",
       outputLocation: out,
       inputProps: tap,
       concurrency: null,
@@ -139,6 +144,15 @@ async function cmdRender(args) {
   }
   fs.rmSync(serveDir, { recursive: true, force: true });
   log("✓ Xong: " + out);
+
+  if (draft) {
+    log("  (Đây là bản xem trước. Ưng rồi thì xuất bản chính bằng '3-TaoVideo.bat'.)");
+    // Mở file bằng trình xem mặc định của Windows.
+    try {
+      const { spawn } = await import("node:child_process");
+      spawn("cmd", ["/c", "start", "", out], { detached: true, stdio: "ignore" }).unref();
+    } catch { /* bỏ qua nếu không mở được */ }
+  }
 }
 
 async function main() {
@@ -152,6 +166,8 @@ async function main() {
       log(statusText());
     } else if (cmd === "render") {
       await cmdRender(args);
+    } else if (cmd === "xem") {
+      await cmdRender(args, { draft: true });
     } else {
       help();
     }

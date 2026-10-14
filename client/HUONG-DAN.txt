@@ -28,10 +28,12 @@ MỖI LẦN LÀM MỘT TẬP
     public/tap01/sub.srt."
    -> Antigravity tự tải ảnh và viết tap.json.
 
-7) Bấm đúp  3-TaoVideo.bat  -> KÉO THẢ file tap.json vào cửa sổ
-   -> Enter.
+7) (Tùy chọn) XEM TRƯỚC: bấm đúp  XemTruoc.bat  -> kéo thả tap.json
+   -> Enter. Máy dựng bản nháp nhanh (nét thấp) rồi tự mở cho xem.
+   Chưa ưng thì sửa rồi xem lại; ưng rồi sang bước 8.
 
-8) Chờ render xong (lần đầu tải thêm trình duyệt nền ~150MB).
+8) XUẤT BẢN CHÍNH: bấm đúp  3-TaoVideo.bat  -> KÉO THẢ tap.json
+   -> Enter. Chờ xong (lần đầu tải thêm trình duyệt nền ~150MB).
    Video nằm ở:  out\video.mp4
 
 
