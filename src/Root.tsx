@@ -22,6 +22,8 @@ const theoGiongDoc: CalculateMetadataFunction<VideoProps> = async ({ props }) =>
 const TAP: { id: string; props: VideoProps }[] = [
   { id: "TapMau", props: tapMau },
   { id: "Tap01", props: tap01 },
+  // Composition động: công cụ `stls` render tập bất kỳ bằng cách nạp tap.json vào đây
+  { id: "Tap", props: tapMau },
 ];
 
 export const RemotionRoot: React.FC = () => (

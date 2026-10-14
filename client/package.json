@@ -1,0 +1,13 @@
+{
+  "name": "stls",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Công cụ render video Sự Thật Lịch Sử (có cấp phép)",
+  "type": "module",
+  "bin": { "stls": "./stls.mjs" },
+  "engines": { "node": ">=20" },
+  "dependencies": {
+    "@remotion/renderer": "4.0.490",
+    "remotion": "4.0.490"
+  }
+}

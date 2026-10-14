@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Quản trị License — Sự Thật Lịch Sử</title>
+<style>
+  :root { color-scheme: light dark; --bg:#0f1115; --card:#1a1d24; --line:#2a2f3a; --fg:#e8eaed; --mut:#9aa3b2; --red:#e5484d; --grn:#30a46c; --amb:#f5a623; }
+  * { box-sizing: border-box; }
+  body { margin:0; font:15px/1.5 system-ui, sans-serif; background:var(--bg); color:var(--fg); padding:24px; }
+  h1 { font-size:20px; margin:0 0 16px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px; margin-bottom:16px; max-width:1100px; }
+  label { display:block; font-size:13px; color:var(--mut); margin-bottom:4px; }
+  input, button { font:inherit; }
+  input { background:#0d0f13; border:1px solid var(--line); color:var(--fg); border-radius:8px; padding:8px 10px; }
+  button { cursor:pointer; border:1px solid var(--line); background:#242833; color:var(--fg); border-radius:8px; padding:8px 12px; }
+  button.primary { background:var(--grn); border-color:var(--grn); color:#042; font-weight:600; }
+  button.warn { background:#3a2a1a; border-color:var(--amb); color:var(--amb); }
+  button.danger { background:#3a1f21; border-color:var(--red); color:var(--red); }
+  .row { display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end; }
+  table { width:100%; border-collapse:collapse; margin-top:8px; font-size:13.5px; }
+  th, td { text-align:left; padding:8px 10px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { color:var(--mut); font-weight:600; }
+  code { font-family:ui-monospace, monospace; font-size:13px; }
+  .tag { font-size:11px; padding:2px 7px; border-radius:999px; border:1px solid var(--line); }
+  .ok { color:var(--grn); border-color:var(--grn); } .bad { color:var(--red); border-color:var(--red); } .wait { color:var(--amb); border-color:var(--amb); }
+  .mut { color:var(--mut); } .err { color:var(--red); } .keybox { background:#0d0f13; border:1px dashed var(--grn); padding:12px; border-radius:8px; margin-top:8px; }
+  .acts { display:flex; gap:6px; flex-wrap:wrap; }
+</style>
+</head>
+<body>
+  <h1>Quản trị License — Sự Thật Lịch Sử</h1>
+
+  <div class="card" id="loginCard">
+    <div class="row">
+      <div style="flex:1; min-width:240px">
+        <label>Mật khẩu quản trị (ADMIN_TOKEN)</label>
+        <input id="token" type="password" style="width:100%" placeholder="dán ADMIN_TOKEN" />
+      </div>
+      <button class="primary" onclick="saveToken()">Đăng nhập</button>
+      <button onclick="logout()">Đăng xuất</button>
+    </div>
+    <div id="loginErr" class="err"></div>
+  </div>
+
+  <div class="card">
+    <div class="row">
+      <div><label>Ghi chú / tên khách</label><input id="label" placeholder="VD: Khách A — kênh ABC" /></div>
+      <div><label>Số ngày</label><input id="days" type="number" value="7" min="1" style="width:100px" /></div>
+      <button class="primary" onclick="createKey()">Tạo key mới</button>
+    </div>
+    <div id="newKey"></div>
+  </div>
+
+  <div class="card">
+    <div class="row" style="justify-content:space-between">
+      <strong>Danh sách key</strong>
+      <button onclick="load()">Tải lại</button>
+    </div>
+    <div id="list" class="mut">Chưa đăng nhập.</div>
+  </div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+let TOKEN = localStorage.getItem("stls_admin_token") || "";
+if (TOKEN) $("token").value = TOKEN;
+
+function saveToken(){ TOKEN = $("token").value.trim(); localStorage.setItem("stls_admin_token", TOKEN); load(); }
+function logout(){ TOKEN=""; localStorage.removeItem("stls_admin_token"); $("token").value=""; $("list").textContent="Đã đăng xuất."; }
+
+async function api(method, body){
+  const r = await fetch("/api/admin", { method, headers:{ "x-admin-token":TOKEN, "content-type":"application/json" }, body: body?JSON.stringify(body):undefined });
+  const j = await r.json().catch(()=>({error:"lỗi phản hồi"}));
+  if(!r.ok) throw new Error(j.error || ("HTTP "+r.status));
+  return j;
+}
+
+function fmt(ts){ return ts ? new Date(ts*1000).toLocaleString("vi-VN") : "—"; }
+function daysLeft(ts){ if(!ts) return ""; const d=Math.ceil((ts-Date.now()/1000)/86400); return d>0? "còn "+d+" ngày" : "hết hạn"; }
+
+async function createKey(){
+  try{
+    const j = await api("POST", { action:"create", label:$("label").value, days:Number($("days").value)||7 });
+    $("newKey").innerHTML = '<div class="keybox">Key mới (gửi cho khách): <code><b>'+j.license.key+'</b></code> — '+j.license.days+' ngày, bắt đầu tính khi khách kích hoạt lần đầu.</div>';
+    load();
+  }catch(e){ alert("Lỗi: "+e.message); }
+}
+
+async function act(key, action, extra){
+  if(action==="delete" && !confirm("Xoá hẳn key "+key+"?")) return;
+  try{ await api("POST", Object.assign({action, key}, extra||{})); load(); }
+  catch(e){ alert("Lỗi: "+e.message); }
+}
+
+async function load(){
+  $("loginErr").textContent="";
+  if(!TOKEN){ $("list").textContent="Chưa đăng nhập."; return; }
+  try{
+    const j = await api("GET");
+    const rows = j.licenses.map(r=>{
+      let state, cls;
+      if(r.revoked){ state="đã khóa"; cls="bad"; }
+      else if(!r.machineId){ state="chờ kích hoạt"; cls="wait"; }
+      else if(r.expiresAt && r.expiresAt < Date.now()/1000){ state="hết hạn"; cls="bad"; }
+      else { state="đang chạy "+daysLeft(r.expiresAt); cls="ok"; }
+      return `<tr>
+        <td><code>${r.key}</code><br><span class="mut">${r.label||""}</span></td>
+        <td><span class="tag ${cls}">${state}</span></td>
+        <td>${r.days} ngày<br><span class="mut">hết: ${fmt(r.expiresAt)}</span></td>
+        <td><span class="mut">${r.machineName||r.machineId||"—"}</span></td>
+        <td class="acts">
+          ${r.revoked? `<button onclick="act('${r.key}','unrevoke')">Mở khóa</button>` : `<button class="warn" onclick="act('${r.key}','revoke')">Khóa</button>`}
+          <button onclick="act('${r.key}','extend',{days:Number(prompt('Gia hạn thêm bao nhiêu ngày?','7'))||0})">Gia hạn</button>
+          <button onclick="act('${r.key}','resetMachine')">Gỡ máy</button>
+          <button class="danger" onclick="act('${r.key}','delete')">Xoá</button>
+        </td></tr>`;
+    }).join("");
+    $("list").innerHTML = `<table><thead><tr><th>Key / khách</th><th>Trạng thái</th><th>Thời hạn</th><th>Máy</th><th>Thao tác</th></tr></thead><tbody>${rows||'<tr><td colspan=5 class=mut>Chưa có key nào.</td></tr>'}</tbody></table>`;
+  }catch(e){ $("loginErr").textContent = "Không tải được: "+e.message; $("list").textContent=""; }
+}
+load();
+</script>
+</body>
+</html>

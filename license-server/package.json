@@ -1,0 +1,14 @@
+{
+  "name": "stls-license-server",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Server cấp phép (license) cho công cụ render video Sự Thật Lịch Sử",
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "dependencies": {
+    "@upstash/redis": "1.34.3"
+  },
+  "devDependencies": {
+    "@vercel/node": "5.1.14"
+  }
+}
