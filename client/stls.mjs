@@ -64,6 +64,23 @@ async function cmdRender(args) {
   }
   if (!publicDir) die("Không tìm thấy thư mục public/ chứa ảnh và âm thanh.");
 
+  // Kiểm tra tư liệu: giọng đọc bắt buộc; phụ đề/nhạc thiếu thì tự bỏ qua.
+  const has = (rel) => rel && fs.existsSync(path.join(publicDir, rel));
+  if (!has(tap.giongDoc)) {
+    die(
+      "Thiếu file giọng đọc: public/" + (tap.giongDoc || "(chưa khai báo)") +
+        "\n  Hãy bỏ file .mp3 giọng đọc vào đúng chỗ đó (video dài theo file này)."
+    );
+  }
+  if (tap.phuDe && tap.phuDe.hien && !has(tap.phuDe.file)) {
+    console.warn("  ! Không thấy phụ đề public/" + tap.phuDe.file + " → render KHÔNG kèm phụ đề.");
+    tap.phuDe = { ...tap.phuDe, hien: false };
+  }
+  if (tap.nhacNen && !has(tap.nhacNen)) {
+    console.warn("  ! Không thấy nhạc nền public/" + tap.nhacNen + " → render KHÔNG nhạc nền.");
+    tap.nhacNen = "";
+  }
+
   if (!fs.existsSync(path.join(BUNDLE, "index.html")))
     die("Thiếu bản bundle. Liên hệ nhà cung cấp để nhận bản cài đặt đầy đủ.");
 

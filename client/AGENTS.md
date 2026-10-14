@@ -1,25 +1,33 @@
 # Hướng dẫn cho AI (Antigravity) — tạo tập video Sự Thật Lịch Sử
 
-Bạn (AI) KHÔNG sửa mã nguồn. Bạn chỉ làm 3 việc:
-1. Chuẩn bị tư liệu cho một tập trong thư mục `du_an/<ten_tap>/`.
-2. Viết file `tap.json` mô tả tập đó.
-3. Chạy lệnh render: `stls render du_an/<ten_tap>/tap.json out/<ten_tap>.mp4`
+Bạn (AI) KHÔNG sửa mã nguồn.
 
-Không có cách tạo video nào khác. Lệnh `stls` cần giấy phép còn hạn; nếu báo
-"Giấy phép không hợp lệ" hãy dừng lại và báo cho người dùng, ĐỪNG tìm cách vòng qua.
+## Ai lo phần nào
+
+- **Khách cung cấp:** file **giọng đọc `giong.mp3`** và **phụ đề `sub.srt`**
+  (đặt trong `public/<ten_tap>/`). Đây là đầu vào của khách, bạn KHÔNG tạo hai file này.
+- **Việc của bạn (AI):**
+  1. **Tìm ảnh** phù hợp với nội dung tập — tải từ Internet (ưu tiên ảnh miễn phí bản quyền:
+     Wikimedia Commons, public domain) **hoặc dùng ảnh khách đưa** — lưu vào `public/thuvien/`.
+  2. **Đọc phụ đề `sub.srt`** để nắm nội dung, rồi **viết `tap.json`** dựng cảnh khớp với lời đọc.
+  3. **Chạy render:** `stls render du_an/<ten_tap>/tap.json out/<ten_tap>.mp4`
+
+Lệnh `stls` cần giấy phép còn hạn; nếu báo "Giấy phép không hợp lệ" hãy dừng và báo người dùng,
+ĐỪNG tìm cách vòng qua.
 
 ## Bố cục thư mục một tập
 
 ```
-du_an/<ten_tap>/tap.json      ← bạn viết file này
-public/<ten_tap>/giong.mp3    ← giọng đọc (bắt buộc)
-public/<ten_tap>/sub.srt      ← phụ đề
+du_an/<ten_tap>/tap.json      ← BẠN viết (dựng cảnh)
+public/<ten_tap>/giong.mp3    ← KHÁCH gửi (giọng đọc; video dài theo file này) — bắt buộc
+public/<ten_tap>/sub.srt      ← KHÁCH gửi (phụ đề)
 public/<ten_tap>/nhac.mp3     ← nhạc nền (không bắt buộc)
-public/thuvien/*.jpg          ← ảnh dùng chung
+public/thuvien/*.jpg          ← BẠN tải ảnh về / ảnh khách cấp
 ```
 
 Mọi đường dẫn trong `tap.json` tính từ thư mục `public/`, ví dụ `"tap01/giong.mp3"`,
-`"thuvien/le_loi_01.jpg"`. Ảnh bạn tự vẽ/chuẩn bị thì lưu vào `public/thuvien/`.
+`"thuvien/le_loi_01.jpg"`. Nếu thiếu `sub.srt` thì video vẫn render nhưng không có phụ đề.
+Căn thời gian các cảnh (`batDau`, `luc`) theo mốc thời gian trong `sub.srt` để ảnh khớp lời đọc.
 
 ## Cấu trúc tap.json
 
