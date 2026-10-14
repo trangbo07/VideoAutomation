@@ -2,6 +2,15 @@
 
 Công cụ tạo video tự động. Cần **key còn hạn** do nhà cung cấp cấp.
 
+## Cách nhanh (chỉ cần bấm đúp — khuyên dùng)
+
+1. Cài **Node.js** một lần: tải ở https://nodejs.org rồi cài (Next → Next → Finish).
+2. Bấm đúp **`1-CaiDat.bat`** → chờ cài xong.
+3. Bấm đúp **`2-KichHoat.bat`** → dán KEY nhà cung cấp gửi → Enter.
+4. Bấm đúp **`3-TaoVideo.bat`** → kéo thả file `tap.json` vào → Enter. Video nằm trong thư mục `out`.
+
+Phần dưới là cách dùng bằng dòng lệnh (cho ai quen Terminal).
+
 ## Cài một lần
 
 1. Cài [Node.js 20+](https://nodejs.org).
