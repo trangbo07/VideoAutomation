@@ -1,0 +1,45 @@
+========================================================
+  HƯỚNG DẪN SỬ DỤNG — CÔNG CỤ TẠO VIDEO (stls)
+========================================================
+
+CHUẨN BỊ 1 LẦN
+--------------------------------------------------------
+1) Cài Node.js: vào  https://nodejs.org  tải bản mới nhất,
+   cài bình thường (Next -> Next -> Finish).
+
+2) Giải nén file nhận được ra một thư mục, ví dụ  D:\stls
+
+3) Bấm đúp  1-CaiDat.bat   -> chờ hiện "Cài đặt xong".
+
+4) Bấm đúp  2-KichHoat.bat -> dán KEY được cấp -> Enter.
+   Thấy "Đã kích hoạt" là xong. (KEY gắn với máy này.)
+
+
+MỖI LẦN LÀM MỘT TẬP
+--------------------------------------------------------
+5) Tạo thư mục tập, ví dụ  du_an\tap01\
+   Bỏ 2 file BẠN chuẩn bị vào  public\tap01\ :
+     - giong.mp3  : giọng đọc  (BẮT BUỘC - video dài theo file này)
+     - sub.srt    : phụ đề     (nên có; thiếu thì video không phụ đề)
+
+6) Mở Antigravity ngay tại thư mục này và yêu cầu:
+   "Đọc AGENTS.md. Tạo tập tap01: tìm ảnh phù hợp lưu vào
+    public/thuvien, rồi viết du_an/tap01/tap.json theo phụ đề
+    public/tap01/sub.srt."
+   -> Antigravity tự tải ảnh và viết tap.json.
+
+7) Bấm đúp  3-TaoVideo.bat  -> KÉO THẢ file tap.json vào cửa sổ
+   -> Enter.
+
+8) Chờ render xong (lần đầu tải thêm trình duyệt nền ~150MB).
+   Video nằm ở:  out\video.mp4
+
+
+LƯU Ý
+--------------------------------------------------------
+- Khi render máy phải có mạng Internet (để kiểm tra bản quyền).
+- Nếu báo "Giấy phép không hợp lệ" -> KEY hết hạn, liên hệ
+  nhà cung cấp để gia hạn.
+- Xem tình trạng KEY: mở Terminal trong thư mục, gõ:
+      node stls.mjs status
+========================================================
