@@ -1,0 +1,6 @@
+node_modules
+out
+_ungvien
+*.mp4
+*.mp3
+*.wav
